@@ -49,12 +49,19 @@ async function run() {
       res.send(result);
     });
 
-    //  get a single user by email:
-    app.post("/user", async (req, res) => {
-      const username = req?.query?.username;
-      const filter = { username };
-      const result = await userCollection.findOne(filter);
-      res.send(result);
+    //  get a single user by username and password:
+    app.get("/user", async (req, res) => {
+      const { username, password } = req?.query;
+      const query = {username}
+
+      const user = await userCollection.findOne(query);
+      if (!user) {
+        return res.send({ message: "Username not found" });
+      }
+      if (user?.password !== password) {
+        return res.send({ message: `Password doesn't match` });
+      }
+      res.send(user);
     });
 
     console.log(
