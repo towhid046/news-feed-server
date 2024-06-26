@@ -94,9 +94,17 @@ async function run() {
       res.send(result);
     });
 
-    // save a single news
+    // get all news
     app.get("/news", async (req, res) => {
       const result = await newsCollection.find().toArray();
+      res.send(result);
+    });
+
+    // get a single news by id
+    app.get("/news/:id", async (req, res) => {
+      const id = req?.params?.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await newsCollection.findOne(query);
       res.send(result);
     });
 
@@ -104,13 +112,24 @@ async function run() {
     app.delete("/delete-post", async (req, res) => {
       const id = req?.query?.id;
       const username = req?.query?.username;
-      console.log(id);
       const query = { _id: new ObjectId(id) };
       const post = await newsCollection.findOne(query);
       let result = "";
       if (post.username === username) {
         result = await newsCollection.deleteOne(query);
       }
+      res.send(result);
+    });
+
+    // update a news by id
+    app.put("/update-news/:id", async (req, res) => {
+      const id = req?.params?.id;
+      const post = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: { ...post },
+      };
+      const result = await newsCollection.updateOne(filter, updatedDoc);
       res.send(result);
     });
 
