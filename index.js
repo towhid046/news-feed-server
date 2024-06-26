@@ -8,7 +8,12 @@ const port = process.env.PORT || 5000;
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.q1nysvk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // middle ware
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://news-feed-pi.vercel.app"],
+  })
+);
+
 app.use(express.json());
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -104,7 +109,8 @@ async function run() {
     app.get("/news/:id", async (req, res) => {
       const id = req?.params?.id;
       const query = { _id: new ObjectId(id) };
-      const result = await newsCollection.findOne(query);
+      const options = { projection: { description: 1, thumbnail_img: 1 } };
+      const result = await newsCollection.findOne(query, options);
       res.send(result);
     });
 
