@@ -10,7 +10,13 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 // middle ware
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://news-feed-pi.vercel.app"],
+    origin: [
+      "http://localhost:5173",
+      "https://news-feed-client-iota.vercel.app",
+      "https://news-feed-client-84ey0rzw4-towhid.vercel.app",
+      "https://news-feed-client-git-main-towhid.vercel.app",
+    ],
+    credentials: true,
   })
 );
 
