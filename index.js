@@ -12,9 +12,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://news-feed-client-iota.vercel.app",
-      "https://news-feed-client-84ey0rzw4-towhid.vercel.app",
-      "https://news-feed-client-git-main-towhid.vercel.app",
+      'https://new-feed-client.web.app',
     ],
     credentials: true,
   })
