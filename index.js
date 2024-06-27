@@ -11,6 +11,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 app.use(
   cors({
     origin: ["http://localhost:5173", "https://news-feed-pi.vercel.app"],
+    methods: ["*"],
   })
 );
 
@@ -96,6 +97,37 @@ async function run() {
     app.post("/add-news", async (req, res) => {
       const post = req?.body;
       const result = await newsCollection.insertOne(post);
+      res.send(result);
+    });
+
+    // handle likes
+    app.put("/likes", async (req, res) => {
+      const postId = req?.query?.id;
+      const username = req?.query?.username;
+      const query = { _id: new ObjectId(postId) };
+      const post = await newsCollection.findOne(query);
+      if (post?.likes?.includes(username)) {
+        // remove the username:
+        const result = await newsCollection.updateOne(query, {
+          $pull: { likes: username },
+        });
+        return res.send(result);
+      }
+      // add the username in the likes array
+      const updateResult = await newsCollection.updateOne(query, {
+        $addToSet: { likes: username },
+      });
+      res.send(updateResult);
+    });
+
+    app.put("/comments", async (req, res) => {
+      const postId = req?.query?.id;
+      const { comment } = req.body;
+      const filter = { _id: new ObjectId(postId) };
+      const updatedDoc = {
+        $addToSet: { comments: comment },
+      };
+      const result = await newsCollection.updateOne(filter, updatedDoc);
       res.send(result);
     });
 
