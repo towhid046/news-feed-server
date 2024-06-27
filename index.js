@@ -11,7 +11,6 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 app.use(
   cors({
     origin: ["http://localhost:5173", "https://news-feed-pi.vercel.app"],
-    methods: ["*"],
   })
 );
 
@@ -25,6 +24,7 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   },
 });
+
 async function run() {
   try {
     const userCollection = client.db("newsFeedDB").collection("users");
@@ -120,12 +120,14 @@ async function run() {
       res.send(updateResult);
     });
 
+    // add comments
     app.put("/comments", async (req, res) => {
       const postId = req?.query?.id;
-      const { comment } = req.body;
+      // return
+      const newComment = req.body;
       const filter = { _id: new ObjectId(postId) };
       const updatedDoc = {
-        $addToSet: { comments: comment },
+        $addToSet: { comments: newComment },
       };
       const result = await newsCollection.updateOne(filter, updatedDoc);
       res.send(result);
